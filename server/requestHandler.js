@@ -107,7 +107,7 @@ exports.userAddNotes = (req, res) => {
     res.status(404).send('Please hightlight something.');
   } else {
     console.log('NAME', req.body.name);
-    User.findOne({user_id: req.body.name}, (err, user) => {
+    User.findOne({name: req.body.name}, (err, user) => {
       if(err) {
         res.status(404).send('Could not find user.');
       }
