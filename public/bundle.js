@@ -22581,6 +22581,7 @@ var Pin = function Pin(props) {
   //Displays translated text
   function displayTranslation(event) {
     console.log('event.target', event.target.value);
+    props.hideTranslated();
     props.fetchLanguageTranslator(props.listid, props.pinid, props.pin, props.language);
   }
 
@@ -22606,7 +22607,8 @@ var Pin = function Pin(props) {
           } },
         props.pin
       ),
-      _react2.default.createElement(_translator2.default, { id: props.id, active: props.pinid === props.activePinIndex && props.listid === props.activeListIndex && props.showTranslated === true, translated: props.translatedText })
+      _react2.default.createElement(_translator2.default, { id: props.id, active: props.pinid === props.activePinIndex && props.listid === props.activeListIndex && props.showTranslated === true, translated: props.translatedText, getLanguage: props.getLanguage, language: props.language, pinid: props.pinid, listid: props.listid, pin: props.pin, fetchLanguageTranslator: props.fetchLanguageTranslator
+      })
     ),
     _react2.default.createElement(
       'div',
@@ -22643,8 +22645,8 @@ var Pin = function Pin(props) {
       descObj: props.descObj,
       show: props.show,
       title: props.title,
-      loading: props.loading,
-      recentQuery: props.recentQuery
+      recentQuery: props.recentQuery,
+      loading: props.loading
     })
   );
 };
@@ -29397,12 +29399,13 @@ var App = function (_React$Component) {
 
   }, {
     key: 'getLanguage',
-    value: function getLanguage(e) {
+    value: function getLanguage(e, listIndex, pinIndex, text, translateTo) {
       console.log("e.target.value", e.target.value);
       var selected = e.target.value;
       this.setState({
         language: selected
       });
+      this.fetchLanguageTranslator(listIndex, pinIndex, text, e.target.value);
     }
 
     // fetch speech dictation
@@ -29451,12 +29454,23 @@ var App = function (_React$Component) {
         var bool = _this5.state.showTranslated;
         _this5.setState({
           translatedText: res.data,
-          showTranslated: !bool,
           activePinIndex: pinIndex,
           activeListIndex: listIndex
         });
       }).catch(function (err) {
         console.error('*********', err);
+      });
+    }
+
+    // hide translated text
+
+  }, {
+    key: 'hideTranslated',
+    value: function hideTranslated() {
+      console.log('hide');
+      var bool = this.state.showTranslated;
+      this.setState({
+        showTranslated: !bool
       });
     }
 
@@ -29599,7 +29613,8 @@ var App = function (_React$Component) {
               audioFile: _this8.state.audioFile,
               language: _this8.state.language,
               getLanguage: _this8.getLanguage.bind(_this8),
-              recentQuery: _this8.state.recentQuery
+              recentQuery: _this8.state.recentQuery,
+              hideTranslated: _this8.hideTranslated.bind(_this8)
             });
           })
         ),
@@ -38165,7 +38180,7 @@ var List = function List(props) {
             loading: props.loading,
             title: props.title,
             audioFile: props.audioFile
-          }, _defineProperty(_React$createElement, 'audioFile', props.audioFile), _defineProperty(_React$createElement, 'recentQuery', props.recentQuery), _defineProperty(_React$createElement, 'language', props.language), _defineProperty(_React$createElement, 'getLanguage', props.getLanguage), _React$createElement));
+          }, _defineProperty(_React$createElement, 'audioFile', props.audioFile), _defineProperty(_React$createElement, 'recentQuery', props.recentQuery), _defineProperty(_React$createElement, 'language', props.language), _defineProperty(_React$createElement, 'getLanguage', props.getLanguage), _defineProperty(_React$createElement, 'hideTranslated', props.hideTranslated), _React$createElement));
         })
       )
     )
@@ -38439,6 +38454,9 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Translator = function Translator(props) {
+  function translate(e) {
+    props.getLanguage(e, props.listid, props.pinid, props.pin, props.language);
+  }
   if (props.active) {
     return _react2.default.createElement(
       'div',
@@ -38448,25 +38466,25 @@ var Translator = function Translator(props) {
         null,
         _react2.default.createElement(
           'select',
-          { className: 'transLanguage', onChange: props.getLanguage },
+          { className: 'transLanguage', onChange: translate },
           _react2.default.createElement(
             'option',
-            { value: 'Japanese' },
-            'Japanese'
+            { value: 'Arabic', className: 'option' },
+            'Arabic'
           ),
           _react2.default.createElement(
             'option',
-            { value: 'German' },
+            { value: 'German', className: 'option' },
             'German'
           ),
           _react2.default.createElement(
             'option',
-            { selected: true, value: props.language },
-            props.language
+            { value: 'Japanese', className: 'option' },
+            'Japanese'
           ),
           _react2.default.createElement(
             'option',
-            { value: 'Spanish' },
+            { value: 'Spanish', className: 'option' },
             'Spanish'
           )
         )
@@ -59845,7 +59863,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Topics = function Topics(props) {
   var topic = document.getElementById('' + props.topic);
-
   function scrollTo() {
     topic.scrollIntoView({ behavior: 'smooth' });
   }

@@ -5,7 +5,7 @@ var languageTranslatorLib = require('watson-developer-cloud/language-translator/
 var request = require('request');
 var cheerio = require('cheerio');
 var fs = require('fs');
-// require('../auth.js');
+require('../auth.js');
 
 
 
@@ -111,6 +111,7 @@ exports.userAddNotes = (req, res) => {
       if(err) {
         res.status(404).send('Could not find user.');
       }
+      console.log(user);
       var pages = user.urls.map(site => site.name);
 
       if(pages.includes(req.body.uri)) {
