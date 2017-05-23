@@ -1,5 +1,4 @@
 /node_modules
 mongod.exe
 auth.js
-/public/temp
 .DS_Store
